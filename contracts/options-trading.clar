@@ -43,3 +43,12 @@
 (define-constant ERR-NOT-EXPIRED (err u111))
 (define-constant PRECISION u100000000) ;; 8 decimal places for BTC amounts
 (define-constant MIN-EXPIRY-BLOCKS u144) ;; Minimum 1 day worth of blocks (assuming 10min/block)
+
+;; Option Types
+(define-constant OPTION-TYPE-CALL "CALL")
+(define-constant OPTION-TYPE-PUT "PUT")
+
+;; State Variables
+(define-data-var next-option-id uint u1)
+(define-data-var total-options-created uint u0)
+(define-data-var total-options-exercised uint u0)
