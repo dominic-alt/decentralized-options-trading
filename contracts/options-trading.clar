@@ -175,3 +175,25 @@
         (ok option-id)
     )
 )
+
+(define-public (buy-option (sbtc-token <ft-trait>) (option-id uint))
+    (let
+        ((option (unwrap! (get-option option-id) ERR-OPTION-NOT-FOUND)))
+        
+        ;; Verify option hasn't expired and other validations
+        (try! (check-expiry (get expiry option)))
+        (asserts! (not (get exercised option)) ERR-ALREADY-EXERCISED)
+        (asserts! (not (is-eq tx-sender (get writer option))) ERR-NOT-AUTHORIZED)
+        
+        ;; Transfer premium from buyer to writer
+        (try! (transfer-sbtc sbtc-token (get premium option) tx-sender (get writer option)))
+        
+        ;; Update option holder
+        (map-set Options
+            { option-id: option-id }
+            (merge option { holder: tx-sender })
+        )
+        
+        (ok true)
+    )
+)
