@@ -112,3 +112,26 @@
         (ok true)
     )
 )
+
+;; Read-Only Functions
+(define-read-only (get-option (option-id uint))
+    (map-get? Options { option-id: option-id })
+)
+
+(define-read-only (get-user-balance (user principal))
+    (default-to 
+        { balance: u0 }
+        (map-get? UserBalances { user: user })
+    )
+)
+
+(define-read-only (get-current-price)
+    u50000000000) ;; $50,000 with 8 decimal places
+
+(define-read-only (get-contract-stats)
+    {
+        total-options: (var-get total-options-created),
+        exercised-options: (var-get total-options-exercised),
+        next-id: (var-get next-option-id)
+    }
+)
