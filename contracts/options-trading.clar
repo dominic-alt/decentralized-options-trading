@@ -52,3 +52,24 @@
 (define-data-var next-option-id uint u1)
 (define-data-var total-options-created uint u0)
 (define-data-var total-options-exercised uint u0)
+
+;; Data Maps
+(define-map Options
+    { option-id: uint }
+    {
+        writer: principal,
+        holder: principal,
+        option-type: (string-ascii 4),
+        strike-price: uint,
+        premium: uint,
+        collateral: uint,
+        expiry: uint,
+        exercised: bool,
+        created-at: uint
+    }
+)
+
+(define-map UserBalances
+    { user: principal }
+    { balance: uint }
+)
