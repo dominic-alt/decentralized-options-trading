@@ -73,3 +73,42 @@
     { user: principal }
     { balance: uint }
 )
+
+;; Private Functions
+(define-private (is-valid-option-type (option-type (string-ascii 4)))
+    (or 
+        (is-eq option-type OPTION-TYPE-CALL)
+        (is-eq option-type OPTION-TYPE-PUT)
+    )
+)
+
+(define-private (transfer-sbtc (token <ft-trait>) (amount uint) (sender principal) (recipient principal))
+    (begin
+        (asserts! (> amount u0) ERR-ZERO-AMOUNT)
+        (contract-call? token transfer amount sender recipient none)
+    )
+)
+
+(define-private (check-expiry (expiry uint))
+    (let
+        ((min-expiry (+ block-height MIN-EXPIRY-BLOCKS)))
+        (asserts! (>= expiry min-expiry) ERR-EXPIRY-TOO-SOON)
+        (asserts! (> expiry block-height) ERR-OPTION-EXPIRED)
+        (ok true)
+    )
+)
+
+(define-private (validate-strike-price (strike-price uint))
+    (begin
+        (asserts! (> strike-price u0) ERR-INVALID-STRIKE-PRICE)
+        (ok true)
+    )
+)
+
+(define-private (validate-amounts (premium uint) (collateral uint))
+    (begin
+        (asserts! (> premium u0) ERR-ZERO-AMOUNT)
+        (asserts! (> collateral u0) ERR-ZERO-AMOUNT)
+        (ok true)
+    )
+)
