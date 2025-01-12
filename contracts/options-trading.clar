@@ -228,3 +228,32 @@
         (ok true)
     )
 )
+
+(define-public (expire-option (sbtc-token <ft-trait>) (option-id uint))
+    (let
+        ((option (unwrap! (get-option option-id) ERR-OPTION-NOT-FOUND)))
+        
+        ;; Validations
+        (asserts! (>= block-height (get expiry option)) ERR-NOT-EXPIRED)
+        (asserts! (not (get exercised option)) ERR-ALREADY-EXERCISED)
+        (asserts! (is-eq tx-sender (get writer option)) ERR-NOT-AUTHORIZED)
+        
+        ;; Return collateral to writer
+        (try! (transfer-sbtc sbtc-token (get collateral option) (as-contract tx-sender) (get writer option)))
+        
+        ;; Update option state
+        (map-set Options
+            { option-id: option-id }
+            (merge option { exercised: true })
+        )
+        
+        (ok true)
+    )
+)
+
+;; Initialize contract
+(begin
+    (var-set next-option-id u1)
+    (var-set total-options-created u0)
+    (var-set total-options-exercised u0)
+)
